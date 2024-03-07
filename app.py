@@ -54,6 +54,7 @@ date = re.findall(r'Date: (.*?)\n', response)
 publication = re.findall(r'Publication: (.*?)\n', response)
 narrations = re.findall(r'Narration: (.*?)\n', response)
 visuals = re.findall(r'Visual: (.*?)\n', response)
+image_visuals = visuals[:]
 
 with st.expander("See Original Script:newspaper:"):
     try:
@@ -66,11 +67,12 @@ with st.expander("See Original Script:newspaper:"):
         st.write('Narration: ' + narrations[i].replace("\\n", ""))
         st.write('Visual: ' + visuals[i].replace("\\n", ""))
 
+with st.expander("Customize your video :video_camera:"):
 
-size = st.selectbox(
-    'To ensure the best viewing experience, let us know your preferred video format.',
-    ('1080x1920 9:16 (for mobile) Vertical',
-     '1920x1080 16:9 (for desktop) Horizontal'))[:9]
+    size = st.selectbox(
+        'To ensure the best viewing experience, let us know your preferred video format.',
+        ('1080x1920 9:16 (for mobile) Vertical',
+        '1920x1080 16:9 (for desktop) Horizontal'))[:9]
 
 # st.write('You selected:', size)
 
@@ -105,11 +107,12 @@ for index, (narration, visual) in enumerate(zip(narrations, visuals)):
         durations.append(duration)
 
         new_video_visual = st.text_input('Video visual description', value=visual.replace("\\n", ""))
-        if st.button(label='Search Videos', type='secondary', key=str(index) + new_video_visual[:2]):
+        if st.button(label='Search Videos in Pexels', type='secondary', key=str(index) + new_video_visual[:2]):
         #     threading.Thread(target=video(str(index), new_video_visual)).start()
         # st.button(label='Search Videos', type='secondary', key=str(index) + new_video_visual[:2],
         #           on_click=video(str(index), new_video_visual))
-            video(str(index), new_video_visual)
+            with st.spinner('searching videos....'):
+                video(str(index), new_video_visual)
         visuals[index] = new_video_visual
         cols = st.columns(5)
         for i in range(5):
@@ -127,21 +130,22 @@ for index, (narration, visual) in enumerate(zip(narrations, visuals)):
         with cols_col[0]:
             try:
                 new_picture_visual = st.text_input('Image visual description', value=visual.replace("\\n", ""))
-                if st.button(label='Generate Images', type='secondary', key=str(index) + new_picture_visual[:3]):
+                if st.button(label='Generate Images using DALL-E-3', type='secondary', key=str(index) + new_picture_visual[:3]):
                 # st.button(label='Generate Images', type='secondary', key=str(index) + new_picture_visual[:3],
                 #           on_click=image(str(index), new_picture_visual))
                     image(str(index), new_picture_visual)
+                image_visuals[index] = new_picture_visual
                 cols_pictures = st.columns(3)
                 for i in range(3):
                     with cols_pictures[i]:
-                        image_file = open('./videos/'+ str(index) + str(i) +'.mp4', 'rb')
-                        # image_file = './pictures/'+ str(index) + str(i) + '.png'
+                        # image_file = open('./pictures/'+ str(index) + str(i) +'.png', 'rb')
+                        image_file = './pictures/'+ str(index) + str(i) + '.png'
                         chosen = st.checkbox('Picture ' + str(index) + str(i))
                         if chosen:
                             chosen_pictures.append(str(index) + str(i))
                         st.image(image_file)
             except:
-                print('picture', 'error')
+                print('picture', './pictures/'+ str(index) + str(i) + '.png')
         with cols_col[1]:
             try:
                 uploaded_files = st.file_uploader("Choose your own file", accept_multiple_files=True, key=str(index)+'uploadfile')
@@ -175,13 +179,17 @@ for index, (narration, visual) in enumerate(zip(narrations, visuals)):
 # st.write('durations:')
 # st.write(durations)
 
-if len(chosen_videos) != 0 or len(chosen_pictures) != 0:
-    if st.button('Merge Video', type='secondary', key=chosen_videos):
-    # st.button('Merge Video', type='secondary', key=chosen_videos,
-    #            on_click=combine_videos(chosen_videos, chosen_pictures, durations, size))
-        combine_videos(chosen_videos, chosen_pictures, durations, size)
 with st.expander("See Final Video:clapper: and Current Script:newspaper:"):
-    cols = st.columns([0.3,0.7])
+
+    if len(chosen_videos) != 0 or len(chosen_pictures) != 0:
+        if st.button('Merge Video', type='secondary', key=chosen_videos):
+        # st.button('Merge Video', type='secondary', key=chosen_videos,
+        #            on_click=combine_videos(chosen_videos, chosen_pictures, durations, size))
+            
+            with st.spinner('merging videos....'):
+                combine_videos(chosen_videos, chosen_pictures, durations, size)
+            st.balloons()
+    cols = st.columns([0.4,0.6])
     with cols[0]:
         try:
             # st.button('renew', key='renew')
@@ -200,4 +208,5 @@ with st.expander("See Final Video:clapper: and Current Script:newspaper:"):
             print('final script', IndexError)
         for i in range(len(narrations)):
             st.write('Narration: ' + narrations[i].replace("\\n", ""))
-            st.write('Visual: ' + visuals[i].replace("\\n", ""))
+            st.write('Video Visual: ' + visuals[i].replace("\\n", ""))
+            st.write('Image Visual: ' + image_visuals[i].replace("\\n", ""))

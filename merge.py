@@ -81,14 +81,15 @@ def merge_videos(selected_videos, selected_pictures, durations, size):
             audio = AudioFileClip('./speeches/' + video_list[i][0][0] + '.mp3')
         else:
             audio = AudioFileClip('./speeches/' + picture_list[i][0][0] + '.mp3')
-        audio_list.append(audio.set_start(0) if i == 0 else audio.set_start(durations[i - 1]))
-        print(audio.duration, duration)
 
         if duration == 0:
             duration = audio.duration
+            durations[i] = duration
         video_duration = duration / (len(video_list[i]) + len(picture_list[i]))
         total_frames = int(fps * video_duration)  # 计算总帧数
 
+        audio_list.append(audio.set_start(0) if i == 0 else audio.set_start(durations[i - 1]))
+        print(audio.duration, duration)
         # Process videos
         for video_file in video_list[i]:
             cap = cv2.VideoCapture('./videos/' + video_file + '.mp4')
@@ -100,7 +101,7 @@ def merge_videos(selected_videos, selected_pictures, durations, size):
                 frame = resize_frame(frame, width, height)
                 
                 cv2.putText(frame, text="This video contains AI-generated content.", 
-                            org=(00, 185) , fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
+                            org=(00, 0) , fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
                             color=(255, 255, 255), thickness=2, lineType=cv2.LINE_AA)
                 out.write(frame)
                 count += 1
@@ -113,7 +114,7 @@ def merge_videos(selected_videos, selected_pictures, durations, size):
             frames = zoom_in_memory(height=height, width=width, image_path=zoomed_image_path, total_frames=total_frames)
             for frame in frames:
                 cv2.putText(frame, text="This video contains AI-generated content.", 
-                            org=(00, 185) , fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
+                            org=(0, 0) , fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
                             color=(255, 255, 255), thickness=2, lineType=cv2.LINE_AA)
                 out.write(frame)
     out.release()
