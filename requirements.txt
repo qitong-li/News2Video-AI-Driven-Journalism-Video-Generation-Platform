@@ -40,7 +40,7 @@ mdurl==0.1.2
 moviepy==1.0.3
 numpy==1.26.4
 openai==1.10.0
-opencv-python-headless==4.9.0.80
+opencv-python-headless==4.3.0.36
 packaging==23.2
 pandas==2.2.0
 pexels-api-py==0.0.5
