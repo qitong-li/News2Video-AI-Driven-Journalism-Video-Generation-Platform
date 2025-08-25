@@ -20,4 +20,6 @@ It provides a streamlined interface for journalists, media creators, and social 
 ---
 
 ## 🖥️ Demo
-[![Watch the demo](https://youtu.be/8_W_mD3Zw_0)](https://github.com/qitong-li/News2Video-AI-Driven-Journalism-Video-Generation-Platform)
+[![Watch the demo](https://img.shields.io/badge/Demo-Video-blue)](https://youtu.be/8_W_mD3Zw_0)  
+
+---
